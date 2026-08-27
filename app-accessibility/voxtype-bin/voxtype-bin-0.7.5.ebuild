@@ -24,6 +24,7 @@ RESTRICT="mirror"
 RDEPEND="
 	media-libs/alsa-lib
 	media-video/pipewire[pipewire-alsa]
+	net-misc/curl
 	vulkan? ( media-libs/vulkan-loader )
 "
 
