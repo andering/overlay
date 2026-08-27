@@ -8,6 +8,9 @@
   <upstream>
     <remote-id type="github">peteonrails/voxtype</remote-id>
   </upstream>
+  <use>
+    <flag name="autostart">Install the KDE-only XDG autostart entry for the Voxtype daemon.</flag>
+  </use>
   <longdescription lang="en">
     Prebuilt Voxtype voice-to-text package for Linux Wayland sessions with CPU
     and Vulkan Whisper binary variants.

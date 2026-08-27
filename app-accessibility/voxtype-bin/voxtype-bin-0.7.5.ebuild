@@ -9,8 +9,14 @@ DESCRIPTION="Push-to-talk voice-to-text for Wayland Linux systems"
 HOMEPAGE="https://voxtype.io https://github.com/peteonrails/voxtype"
 SRC_URI="
 	https://github.com/peteonrails/voxtype/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz
-	!vulkan? ( https://github.com/peteonrails/voxtype/releases/download/v${PV}/voxtype-${PV}-linux-x86_64-avx2 -> ${PN}-${PV}-linux-x86_64-avx2 )
-	vulkan? ( https://github.com/peteonrails/voxtype/releases/download/v${PV}/voxtype-${PV}-linux-x86_64-vulkan -> ${PN}-${PV}-linux-x86_64-vulkan )
+	!vulkan? (
+		https://github.com/peteonrails/voxtype/releases/download/v${PV}/voxtype-${PV}-linux-x86_64-avx2
+		-> ${PN}-${PV}-linux-x86_64-avx2
+	)
+	vulkan? (
+		https://github.com/peteonrails/voxtype/releases/download/v${PV}/voxtype-${PV}-linux-x86_64-vulkan
+		-> ${PN}-${PV}-linux-x86_64-vulkan
+	)
 "
 
 S="${WORKDIR}/voxtype-${PV}"
@@ -20,6 +26,7 @@ SLOT="0"
 KEYWORDS="~amd64"
 IUSE="autostart vulkan"
 RESTRICT="mirror"
+QA_PRESTRIPPED="usr/bin/voxtype"
 
 RDEPEND="
 	media-libs/alsa-lib
