@@ -51,13 +51,27 @@ app-accessibility/voxtype-bin autostart
 app-accessibility/voxtype-bin vulkan autostart
 ```
 
-Each final line contains all desired flags and replaces only the `voxtype` package's settings. The standard per-package-file command syntax assumes `/etc/portage/package.use/` is a directory. For example, write the Vulkan with KDE autostart state with:
+Each final line contains all desired flags. For the CPU default state, remove any existing `app-accessibility/voxtype-bin` atom line instead of adding one.
 
 ```sh
-echo 'app-accessibility/voxtype-bin vulkan autostart' | sudo tee /etc/portage/package.use/voxtype
+sudoedit /etc/portage/package.use/voxtype
 ```
 
-If `/etc/portage/package.use` is a regular file, edit that file and add the same final line instead.
+This directory-layout command assumes `/etc/portage/package.use/` is a directory. In the editor, locate the existing `app-accessibility/voxtype-bin` atom, if present, and replace that single atom line. Otherwise, add exactly one final atom line. This preserves unrelated entries and comments and avoids duplicate, conflicting atoms.
+
+If `/etc/portage/package.use` is a regular file, use:
+
+```sh
+sudoedit /etc/portage/package.use
+```
+
+Locate the existing `app-accessibility/voxtype-bin` atom, if present, and replace that single atom line. Otherwise, add exactly one final atom line; for the CPU default state, remove the existing atom line. This preserves unrelated entries and comments and avoids duplicate, conflicting atoms.
+
+After either configuration path, apply the selected binary and autostart state:
+
+```sh
+sudo emerge --ask app-accessibility/voxtype-bin
+```
 
 ## Model Setup
 
