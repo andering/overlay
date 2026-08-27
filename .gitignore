@@ -2,6 +2,7 @@
 distfiles/
 packages/
 .pkgcheck/
+metadata/md5-cache/
 
 # Editor and operating-system metadata
 .DS_Store
