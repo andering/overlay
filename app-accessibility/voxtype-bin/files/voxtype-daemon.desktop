@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Voxtype Daemon
+Comment=Start the Voxtype dictation daemon in KDE Plasma
+Exec=voxtype daemon
+Icon=voxtype
+Terminal=false
+OnlyShowIn=KDE;
+X-KDE-autostart-after=panel

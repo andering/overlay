@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Voxtype Configuration
+GenericName=Voice-to-Text Settings
+Comment=Configure Voxtype dictation settings
+Exec=voxtype configure
+Icon=voxtype
+Categories=Settings;Accessibility;
+Keywords=voxtype;voice;dictation;transcription;whisper;
+Terminal=true
+StartupWMClass=voxtype
