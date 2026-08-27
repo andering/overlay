@@ -2,6 +2,30 @@
 
 Gentoo overlay for `app-accessibility/voxtype-bin`.
 
+## Keyword Acceptance
+
+`app-accessibility/voxtype-bin` is keyworded `~amd64`. Add exactly this atom line before installing:
+
+```text
+app-accessibility/voxtype-bin ~amd64
+```
+
+If `/etc/portage/package.accept_keywords/` is a directory, edit the package-specific file:
+
+```sh
+sudoedit /etc/portage/package.accept_keywords/voxtype
+```
+
+Locate an existing `app-accessibility/voxtype-bin` atom line and replace it with the line above; if it is absent, add that line. This preserves unrelated entries and comments.
+
+If `/etc/portage/package.accept_keywords` is a regular file, edit it instead:
+
+```sh
+sudoedit /etc/portage/package.accept_keywords
+```
+
+Locate an existing `app-accessibility/voxtype-bin` atom line and replace it with the line above; if it is absent, add that line. This preserves unrelated entries and comments.
+
 ## Installation
 
 Add the overlay with `eselect`:
@@ -51,13 +75,19 @@ app-accessibility/voxtype-bin autostart
 app-accessibility/voxtype-bin vulkan autostart
 ```
 
-Each final line contains all desired flags. For the CPU default state, remove any existing `app-accessibility/voxtype-bin` atom line instead of adding one.
+Each final line contains all desired flags. For the CPU default state, remove every existing `app-accessibility/voxtype-bin` atom line instead of adding one.
+
+```sh
+grep -R -- 'app-accessibility/voxtype-bin' /etc/portage/package.use/
+```
+
+Directory layouts may have multiple `package.use` fragments. Search every relevant fragment with the command above, then use `sudoedit` on the relevant file or files. Remove or replace all existing `app-accessibility/voxtype-bin` occurrences so exactly one desired final atom line remains in the complete configuration. This preserves unrelated entries and comments and avoids duplicate, conflicting atoms.
+
+For example, edit the package-specific fragment with:
 
 ```sh
 sudoedit /etc/portage/package.use/voxtype
 ```
-
-This directory-layout command assumes `/etc/portage/package.use/` is a directory. In the editor, locate the existing `app-accessibility/voxtype-bin` atom, if present, and replace that single atom line. Otherwise, add exactly one final atom line. This preserves unrelated entries and comments and avoids duplicate, conflicting atoms.
 
 If `/etc/portage/package.use` is a regular file, use:
 
@@ -65,7 +95,7 @@ If `/etc/portage/package.use` is a regular file, use:
 sudoedit /etc/portage/package.use
 ```
 
-Locate the existing `app-accessibility/voxtype-bin` atom, if present, and replace that single atom line. Otherwise, add exactly one final atom line; for the CPU default state, remove the existing atom line. This preserves unrelated entries and comments and avoids duplicate, conflicting atoms.
+Locate every existing `app-accessibility/voxtype-bin` atom line and remove or replace it so exactly one desired final atom line remains; for the CPU default state, remove all such atom lines. This preserves unrelated entries and comments and avoids duplicate, conflicting atoms.
 
 After either configuration path, apply the selected binary and autostart state:
 
