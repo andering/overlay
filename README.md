@@ -37,21 +37,27 @@ sudo emerge --ask app-accessibility/voxtype-bin
 
 The CPU binary is the default installation. Both the CPU and Vulkan upstream binaries require x86-64-v3 CPUs with AVX2 support and are keyworded `~amd64`.
 
-## USE Flags
+## Per-Machine Configuration
 
-Choose Vulkan support per machine. To enable it:
+Choose one final configuration state for each machine:
 
-```sh
-echo 'app-accessibility/voxtype-bin vulkan' | sudo tee /etc/portage/package.use/voxtype
-sudo emerge --ask app-accessibility/voxtype-bin
+```text
+# CPU default: no app-accessibility/voxtype-bin entry
+# Vulkan
+app-accessibility/voxtype-bin vulkan
+# KDE autostart CPU
+app-accessibility/voxtype-bin autostart
+# Vulkan with KDE autostart
+app-accessibility/voxtype-bin vulkan autostart
 ```
 
-To disable it:
+Each final line contains all desired flags and replaces only the `voxtype` package's settings. The standard per-package-file command syntax assumes `/etc/portage/package.use/` is a directory. For example, write the Vulkan with KDE autostart state with:
 
 ```sh
-echo 'app-accessibility/voxtype-bin -vulkan' | sudo tee /etc/portage/package.use/voxtype
-sudo emerge --ask app-accessibility/voxtype-bin
+echo 'app-accessibility/voxtype-bin vulkan autostart' | sudo tee /etc/portage/package.use/voxtype
 ```
+
+If `/etc/portage/package.use` is a regular file, edit that file and add the same final line instead.
 
 ## Model Setup
 
@@ -72,12 +78,7 @@ language = "cs"
 
 ## KDE And OpenRC
 
-There is no systemd unit. On KDE, an XDG Autostart entry runs `voxtype daemon`. The daemon requires PipeWire to be running in the logged-in desktop session. Install that KDE-only entry with the optional `autostart` USE flag:
-
-```sh
-echo 'app-accessibility/voxtype-bin autostart' | sudo tee /etc/portage/package.use/voxtype
-sudo emerge --ask app-accessibility/voxtype-bin
-```
+There is no systemd unit. On KDE, an XDG Autostart entry runs `voxtype daemon`. The daemon requires PipeWire to be running in the logged-in desktop session. Enable that KDE-only entry with the `autostart` final line in the per-machine configuration.
 
 Use a toggle-style hotkey configuration:
 
@@ -109,8 +110,8 @@ sudo emerge --update --deep --newuse --ask app-accessibility/voxtype-bin
 Remove unused dependencies or uninstall Voxtype with:
 
 ```sh
-sudo emerge --ask --depclean
 sudo emerge --ask --unmerge app-accessibility/voxtype-bin
+sudo emerge --ask --depclean
 ```
 
 XDG model and configuration files are managed by the user and are not removed by Portage. Removing the personal XDG configuration and model data is optional: `~/.config/voxtype` and `~/.local/share/voxtype`.
