@@ -109,8 +109,8 @@ sudo emerge --update --deep --newuse --ask app-accessibility/voxtype-bin
 Remove unused dependencies or uninstall Voxtype with:
 
 ```sh
-sudo emerge --depclean
-sudo emerge --unmerge app-accessibility/voxtype-bin
+sudo emerge --ask --depclean
+sudo emerge --ask --unmerge app-accessibility/voxtype-bin
 ```
 
 XDG model and configuration files are managed by the user and are not removed by Portage. Removing the personal XDG configuration and model data is optional: `~/.config/voxtype` and `~/.local/share/voxtype`.
