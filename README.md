@@ -35,7 +35,7 @@ Install the CPU package with:
 sudo emerge --ask app-accessibility/voxtype-bin
 ```
 
-The default installation is the CPU binary. It targets x86-64-v3 CPUs with AVX2 support and is keyworded `~amd64`.
+The CPU binary is the default installation. Both the CPU and Vulkan upstream binaries require x86-64-v3 CPUs with AVX2 support and are keyworded `~amd64`.
 
 ## USE Flags
 
