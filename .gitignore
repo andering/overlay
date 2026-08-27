@@ -3,6 +3,5 @@ distfiles/
 packages/
 .pkgcheck/
 
-# Editor and operating-system metadata
-.DS_Store
+# Editor artifacts
 *~
