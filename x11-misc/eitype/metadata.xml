@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+  <maintainer type="person">
+    <email>andering@gmail.com</email>
+    <name>Andrej Kouril</name>
+  </maintainer>
+  <upstream>
+    <remote-id type="github">Adam-D-Lewis/eitype</remote-id>
+  </upstream>
+  <longdescription lang="en">
+    Command-line client for typing text through the Wayland Emulated Input
+    protocol.
+  </longdescription>
+</pkgmetadata>
