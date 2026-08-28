@@ -201,7 +201,18 @@ SRC_URI="
 	${CARGO_CRATE_URIS}
 "
 
-LICENSE="Apache-2.0"
+LICENSE="
+	Apache-2.0
+	MIT
+	Unicode-3.0
+	Apache-2.0-with-LLVM-exceptions
+	|| ( MIT Unlicense )
+	|| ( MIT Apache-2.0 )
+	|| ( MIT Apache-2.0 LGPL-2.1+ )
+	|| ( MIT Apache-2.0 ZLIB )
+	|| ( BSD-2 MIT Apache-2.0 )
+	|| ( Apache-2.0-with-LLVM-exceptions Apache-2.0 MIT )
+"
 SLOT="0"
 KEYWORDS="~amd64"
 
