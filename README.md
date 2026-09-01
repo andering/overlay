@@ -173,12 +173,9 @@ Install the package:
 sudo emerge --ask net-vpn/cloudflared-openrc
 ```
 
-Edit the root-only configuration with `sudoedit /etc/conf.d/cloudflared` and
-set the token without placing it in shell history:
-
-```sh
-TUNNEL_TOKEN="your-remotely-managed-tunnel-token"
-```
+Edit the root-only token file with `sudoedit /etc/cloudflared/token`. Paste only
+the token, without a variable name, quotes, or other configuration, then save
+the file. This avoids placing the token in shell history.
 
 Enable and start the service explicitly:
 
@@ -188,15 +185,20 @@ sudo rc-service cloudflared start
 sudo rc-service cloudflared status
 ```
 
-The token is passed through the daemon environment and does not appear in the
-`cloudflared` command line. Removing the package does not remove Cloudflare-side
+The command line includes `--token-file /etc/cloudflared/token`, so process argv
+exposes only the token file path, not the token value. The token is not exported
+to the daemon environment. Removing the package does not remove Cloudflare-side
 tunnels or DNS records.
 
 Service output is written to `/var/log/cloudflared.log`, and errors are written
 to `/var/log/cloudflared.err`. Invalid or revoked token failures retry every
 five seconds without a retry limit, and each failure repeats in the error log.
-An empty token is rejected before `cloudflared` launches, and its message
-appears in `rc-service` output.
+Before `cloudflared` launches, the service rejects a missing or non-regular
+token file, ownership other than UID:GID `0:0`, mode other than `0600`, and
+empty or whitespace-only content. It also rejects relative token paths, spaces,
+and characters outside `[A-Za-z0-9_./-]` before constructing the daemon command.
+Each clear file error includes only a validated token file path and appears in
+`rc-service` output.
 
 ## Updating And Removal
 
@@ -211,9 +213,16 @@ sudo emerge --update --deep --ask net-vpn/cloudflared-openrc
 Using `--deep` includes the `net-vpn/cloudflared` dependency, whose self-update
 is disabled by this service.
 
-`/etc/conf.d/cloudflared` is protected by Portage's `CONFIG_PROTECT`. Review
+`/etc/cloudflared/token` is protected by Portage's `CONFIG_PROTECT`. Review
 configuration updates with `dispatch-conf` or `etc-update`, and do not blindly
 replace the configured tunnel token.
+
+Revision `1-r1` detects an active legacy `TUNNEL_TOKEN=` or
+`export TUNNEL_TOKEN=` assignment preserved in `/etc/conf.d/cloudflared` and
+prints a migration warning. It never copies or prints the token automatically.
+Manually move only the token value into `/etc/cloudflared/token`, set that file
+to `root:root` mode `0600`, and remove the legacy assignment. The r1 service
+also unsets an inherited legacy `TUNNEL_TOKEN` before launching `cloudflared`.
 
 Remove unused dependencies or uninstall Voxtype with:
 
@@ -230,10 +239,22 @@ sudo rc-update del cloudflared default
 sudo emerge --ask --unmerge net-vpn/cloudflared-openrc
 ```
 
-A modified `/etc/conf.d/cloudflared` may remain after unmerging the package. If
-decommissioning the service, securely remove that token-bearing file and,
-optionally, `/var/log/cloudflared.log` and `/var/log/cloudflared.err`. Then rotate
-the tunnel token in Cloudflare. If the tunnel is no longer needed, delete it and
+Quietly check whether the preserved legacy configuration still contains a token
+assignment, and remove it without displaying the token. Also remove the r1 token
+file:
+
+```sh
+if sudo test -f /etc/conf.d/cloudflared && \
+  sudo grep -qE '^[[:space:]]*(export[[:space:]]+)?TUNNEL_TOKEN[[:space:]]*=' /etc/conf.d/cloudflared; then
+  sudo rm -f -- /etc/conf.d/cloudflared
+fi
+sudo rm -f -- /etc/cloudflared/token
+```
+
+Quiet matching and removal do not print either token. Filesystem deletion is
+not guaranteed secure erasure, so rotate or revoke the tunnel token in
+Cloudflare. Optionally remove `/var/log/cloudflared.log` and
+`/var/log/cloudflared.err`. If the tunnel is no longer needed, delete it and
 remove its obsolete public hostname or DNS CNAME to avoid stale DNS and
 Cloudflare error 1016.
 

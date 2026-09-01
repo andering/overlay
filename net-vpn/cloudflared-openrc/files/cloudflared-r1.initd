@@ -1,0 +1,63 @@
+#!/sbin/openrc-run
+
+# Copyright 2026 Andrej Kouril
+# Distributed under the terms of the GNU General Public License v2
+
+description="Cloudflare Tunnel connector"
+supervisor="supervise-daemon"
+: "${TUNNEL_TOKEN_FILE:=/etc/cloudflared/token}"
+command="/usr/bin/cloudflared"
+pidfile="/run/cloudflared.pid"
+output_log="/var/log/cloudflared.log"
+error_log="/var/log/cloudflared.err"
+respawn_delay="5"
+respawn_max="0"
+retry="TERM/30/KILL/5"
+
+depend() {
+	need net
+}
+
+start_pre() {
+	unset TUNNEL_TOKEN
+
+	case "${TUNNEL_TOKEN_FILE}" in
+		/*) ;;
+		*)
+			eerror "Cloudflare Tunnel token file path must be absolute"
+			return 1
+			;;
+	esac
+
+	case "${TUNNEL_TOKEN_FILE}" in
+		*[!A-Za-z0-9_./-]*)
+			eerror "Cloudflare Tunnel token file path contains unsafe characters"
+			return 1
+			;;
+	esac
+
+	if [ ! -f "${TUNNEL_TOKEN_FILE}" ]; then
+		eerror "Cloudflare Tunnel token file is missing or not a regular file: ${TUNNEL_TOKEN_FILE}"
+		return 1
+	fi
+
+	local token_owner token_mode
+	token_owner=$(stat -c '%u:%g' -- "${TUNNEL_TOKEN_FILE}") || return 1
+	if [ "${token_owner}" != "0:0" ]; then
+		eerror "Cloudflare Tunnel token file must be owned by UID:GID 0:0: ${TUNNEL_TOKEN_FILE}"
+		return 1
+	fi
+
+	token_mode=$(stat -c '%a' -- "${TUNNEL_TOKEN_FILE}") || return 1
+	if [ "${token_mode}" != "600" ]; then
+		eerror "Cloudflare Tunnel token file mode must be 600: ${TUNNEL_TOKEN_FILE}"
+		return 1
+	fi
+
+	if ! grep -q '[^[:space:]]' -- "${TUNNEL_TOKEN_FILE}"; then
+		eerror "Cloudflare Tunnel token file is empty or whitespace-only: ${TUNNEL_TOKEN_FILE}"
+		return 1
+	fi
+
+	command_args="tunnel --no-autoupdate run --token-file ${TUNNEL_TOKEN_FILE}"
+}

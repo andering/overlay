@@ -1,0 +1,3 @@
+# Path to the token for one remotely managed Cloudflare Tunnel.
+# The token file must contain only the token and remain root-owned with mode 0600.
+TUNNEL_TOKEN_FILE="/etc/cloudflared/token"
