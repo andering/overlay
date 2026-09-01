@@ -1,0 +1,3 @@
+# Token for one remotely managed Cloudflare Tunnel.
+# Keep this file root-readable only and do not pass the token on the command line.
+TUNNEL_TOKEN=""

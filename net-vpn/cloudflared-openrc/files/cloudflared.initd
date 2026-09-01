@@ -1,0 +1,29 @@
+#!/sbin/openrc-run
+
+# Copyright 2026 Andrej Kouril
+# Distributed under the terms of the GNU General Public License v2
+
+description="Cloudflare Tunnel connector"
+supervisor="supervise-daemon"
+command="/usr/bin/cloudflared"
+command_args="tunnel --no-autoupdate run"
+pidfile="/run/cloudflared.pid"
+output_log="/var/log/cloudflared.log"
+error_log="/var/log/cloudflared.err"
+respawn_delay="5"
+respawn_max="0"
+retry="TERM/30/KILL/5"
+required_files="/etc/conf.d/cloudflared"
+
+depend() {
+	need net
+}
+
+start_pre() {
+	if [ -z "${TUNNEL_TOKEN}" ]; then
+		eerror "TUNNEL_TOKEN is empty in /etc/conf.d/cloudflared"
+		return 1
+	fi
+
+	export TUNNEL_TOKEN
+}

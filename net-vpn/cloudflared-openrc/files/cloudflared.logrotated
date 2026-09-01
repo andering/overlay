@@ -1,0 +1,9 @@
+/var/log/cloudflared.log /var/log/cloudflared.err {
+	weekly
+	rotate 4
+	compress
+	delaycompress
+	missingok
+	notifempty
+	copytruncate
+}

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+  <maintainer type="person">
+    <email>andering@gmail.com</email>
+    <name>Andrej Kouril</name>
+  </maintainer>
+  <longdescription lang="en">
+    OpenRC service integration for running one remotely managed Cloudflare
+    Tunnel connector with a protected environment token and process
+    supervision.
+  </longdescription>
+</pkgmetadata>

@@ -3,6 +3,7 @@ distfiles/
 packages/
 .pkgcheck/
 metadata/md5-cache/
+__pycache__/
 
 # Editor and operating-system metadata
 .DS_Store

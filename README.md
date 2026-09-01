@@ -1,6 +1,10 @@
 # andering/overlay
 
-Gentoo overlay for `app-accessibility/voxtype-bin`.
+Gentoo overlay containing:
+
+- `app-accessibility/voxtype-bin`
+- `net-vpn/cloudflared-openrc`
+- `x11-misc/eitype`
 
 ## Keyword Acceptance
 
@@ -142,6 +146,58 @@ Install `gui-apps/wl-clipboard` for Wayland clipboard integration. Use eitype or
 
 Do not make a user, group, or system-level change for this setup. In particular, do not add the desktop user to the `input` group when using a KDE shortcut.
 
+## Cloudflared OpenRC
+
+`net-vpn/cloudflared-openrc` installs an OpenRC service for Gentoo's official
+`net-vpn/cloudflared` package. It supports one remotely managed Cloudflare
+Tunnel per host and does not contain a tunnel token or enable itself.
+
+Accept the testing keyword for the host architecture:
+
+```text
+# amd64
+net-vpn/cloudflared-openrc ~amd64
+# arm64
+net-vpn/cloudflared-openrc ~arm64
+```
+
+If `/etc/portage/package.accept_keywords/` is a directory, edit
+`/etc/portage/package.accept_keywords/cloudflared-openrc`. If
+`/etc/portage/package.accept_keywords` is a regular file, edit that file
+instead. Add the appropriate architecture-specific line from above while
+preserving unrelated entries and comments.
+
+Install the package:
+
+```sh
+sudo emerge --ask net-vpn/cloudflared-openrc
+```
+
+Edit the root-only configuration with `sudoedit /etc/conf.d/cloudflared` and
+set the token without placing it in shell history:
+
+```sh
+TUNNEL_TOKEN="your-remotely-managed-tunnel-token"
+```
+
+Enable and start the service explicitly:
+
+```sh
+sudo rc-update add cloudflared default
+sudo rc-service cloudflared start
+sudo rc-service cloudflared status
+```
+
+The token is passed through the daemon environment and does not appear in the
+`cloudflared` command line. Removing the package does not remove Cloudflare-side
+tunnels or DNS records.
+
+Service output is written to `/var/log/cloudflared.log`, and errors are written
+to `/var/log/cloudflared.err`. Invalid or revoked token failures retry every
+five seconds without a retry limit, and each failure repeats in the error log.
+An empty token is rejected before `cloudflared` launches, and its message
+appears in `rc-service` output.
+
 ## Updating And Removal
 
 Update the overlay and installed packages with:
@@ -149,7 +205,15 @@ Update the overlay and installed packages with:
 ```sh
 sudo emaint sync -r overlay
 sudo emerge --update --deep --newuse --ask app-accessibility/voxtype-bin
+sudo emerge --update --deep --ask net-vpn/cloudflared-openrc
 ```
+
+Using `--deep` includes the `net-vpn/cloudflared` dependency, whose self-update
+is disabled by this service.
+
+`/etc/conf.d/cloudflared` is protected by Portage's `CONFIG_PROTECT`. Review
+configuration updates with `dispatch-conf` or `etc-update`, and do not blindly
+replace the configured tunnel token.
 
 Remove unused dependencies or uninstall Voxtype with:
 
@@ -157,5 +221,20 @@ Remove unused dependencies or uninstall Voxtype with:
 sudo emerge --ask --unmerge app-accessibility/voxtype-bin
 sudo emerge --ask --depclean
 ```
+
+Stop, disable, and uninstall the Cloudflared OpenRC service with:
+
+```sh
+sudo rc-service cloudflared stop
+sudo rc-update del cloudflared default
+sudo emerge --ask --unmerge net-vpn/cloudflared-openrc
+```
+
+A modified `/etc/conf.d/cloudflared` may remain after unmerging the package. If
+decommissioning the service, securely remove that token-bearing file and,
+optionally, `/var/log/cloudflared.log` and `/var/log/cloudflared.err`. Then rotate
+the tunnel token in Cloudflare. If the tunnel is no longer needed, delete it and
+remove its obsolete public hostname or DNS CNAME to avoid stale DNS and
+Cloudflare error 1016.
 
 XDG model and configuration files are managed by the user and are not removed by Portage. Removing the personal XDG configuration and model data is optional: `~/.config/voxtype` and `~/.local/share/voxtype`.
